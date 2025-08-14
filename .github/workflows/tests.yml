@@ -1,0 +1,57 @@
+name: Dev Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  node:
+    if: github.repository != 'bot-ts/framework'
+    name: Test on Node.js v22
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install package manager
+        run: |
+          if [ "pnpm" != "npm" ]; then
+            if [ "pnpm" == "yarn" ]; then
+              npm install -g yarn@latest
+            else
+              npm install -g pnpm@latest
+            fi
+          else
+            echo "npm is already installed"
+          fi
+
+      - name: Install dependencies
+        run: |
+          if [ "pnpm" == "npm" ]; then
+            npm ci
+            npm install @rollup/rollup-linux-x64-gnu
+          elif [ "pnpm" == "yarn" ]; then
+            yarn install --frozen-lockfile
+            yarn add @rollup/rollup-linux-x64-gnu
+          elif [ "pnpm" == "pnpm" ]; then
+            pnpm install --frozen-lockfile
+            pnpm add @rollup/rollup-linux-x64-gnu --install-strategy=hoisted
+          fi
+
+      - name: Check typings
+        run: npx tsc --noEmit
+
+      - name: Build JS
+        run: npx rimraf dist && npx rollup -c && node scripts/copy-keepers.js
+
+      - name: Start the bot
+        run: node dist/index.test.js
+
