@@ -1,10 +1,17 @@
 import { SlashCommand } from "#core/slash";
+import channelLimits from "#tables/channelLimits";
 
 const setupChannelCost = async (
   guildId: string | null,
   channelId: string,
   cost: number | null
-) => {};
+) => {
+  await channelLimits.query.insert({
+    guild_id: guildId!,
+    channel_id: channelId,
+    cost: cost!,
+  });
+};
 
 /**
  * See the {@link https://ghom.gitbook.io/bot.ts/usage/create-a-command command guide} for more information.
@@ -24,10 +31,8 @@ export default new SlashCommand({
     });
     // builder.addSubcommand, builder.addStringOption, etc.
   },
-  run(interaction) {
-    console.log("Information: ", interaction.options.data);
-
-    setupChannelCost(
+  async run(interaction) {
+    await setupChannelCost(
       interaction.guildId,
       interaction.channelId,
       interaction.options.getNumber("cost")
@@ -35,7 +40,9 @@ export default new SlashCommand({
 
     // todo: code of command or sub-commands here
     return interaction.reply({
-      content: "init command is not yet implemented.",
+      content: `Channel initialized successfully! Cost per Character set to: ${interaction.options.getNumber(
+        "cost"
+      )}`,
       ephemeral: true,
     });
   },
