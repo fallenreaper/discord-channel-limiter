@@ -42,11 +42,6 @@ export default new Listener({
 
     // If it dropped below user, apply the Muted role.
     if (userInfo.allowance < 0) {
-      message.guild?.roles.fetch("Muted").then((role) => {
-        if (!role) {
-          message.guild?.roles.create({ name: "Muted", color: "Grey" });
-        }
-      });
       message.member?.roles.add("Muted");
     }
 

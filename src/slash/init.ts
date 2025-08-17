@@ -1,5 +1,6 @@
 import { SlashCommand } from "#core/slash";
 import channelLimits from "#tables/channelLimits";
+import { ChannelType } from "discord.js";
 
 const setupChannelCost = async (
   guildId: string | null,
@@ -37,6 +38,20 @@ export default new SlashCommand({
       interaction.channelId,
       interaction.options.getNumber("cost")
     );
+
+    // Creates Muted Role if it doesn't exist.
+    let role = await interaction.guild?.roles.fetch("Muted");
+    if (!role) {
+      role = await interaction.guild?.roles.create({
+        name: "Muted",
+        color: "Grey",
+      });
+    }
+
+    interaction.channel.type === ChannelType.GuildText &&
+      interaction.channel?.permissionOverwrites.create(role!, {
+        SendMessages: false, // Disallow sending messages for this role
+      });
 
     // todo: code of command or sub-commands here
     return interaction.reply({
