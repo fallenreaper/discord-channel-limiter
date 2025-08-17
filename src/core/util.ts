@@ -70,7 +70,7 @@ export async function checkUpdates() {
     "https://raw.githubusercontent.com/bot-ts/framework/master/package.json"
   ).then((res) => {
     console.log(`Type: ${typeof res} Content: ${res}`);
-    // return res as any;
+    // @ts-ignore
     return res.json() as any;
   });
 
