@@ -34,8 +34,8 @@ const setupChannelCost = async (
  * See the {@link https://ghom.gitbook.io/bot.ts/usage/create-a-command command guide} for more information.
  */
 export default new SlashCommand({
-  name: "init",
-  description: "initializes a channel to markings",
+  name: "channel-init",
+  description: "initializes a channel to marketing",
   build: (builder) => {
     builder.addNumberOption((option) => {
       option
