@@ -13,6 +13,8 @@ export default new SlashCommand({
         user_id: interaction.user.id,
       })
       .first();
+
+    // If there are no tokens
     if (!userInfo) {
       return interaction.reply({
         content: "You do not have any tokens.",

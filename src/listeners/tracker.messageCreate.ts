@@ -9,8 +9,6 @@ export default new Listener({
   event: "messageCreate",
   description: "listens for users and sets mute status as needed",
   async run(message) {
-    // todo: code here
-
     if (message.author.bot) return;
 
     let channelInfo = await channelLimits.query
@@ -24,7 +22,7 @@ export default new Listener({
     if (!channelInfo) {
       return;
     }
-    console.log(`Channel Info Found: ${channelInfo.cost}`);
+    // Sets the Cost for business.
     const cost = message.content.length * channelInfo.cost;
 
     let isNewUser = false;
@@ -37,12 +35,13 @@ export default new Listener({
       isNewUser = true;
       userInfo = {
         user_id: message.author.id,
+        guild_id: message.guildId!,
         allowance: 10000,
       };
     }
+    // Makes adjustments to the user's allowance
     userInfo.allowance -= cost;
 
-    console.log(`User Allowance: ${userInfo.allowance}, Cost: ${cost}`);
     // If it dropped below user, apply the Muted role.
     if (userInfo.allowance < 0) {
       message.member?.roles.add(
@@ -56,6 +55,5 @@ export default new Listener({
     } else {
       await userInformation.query.update(userInfo);
     }
-    console.log("Finished.");
   },
 });

@@ -46,26 +46,19 @@ export default new SlashCommand({
         .setMaxValue(10000);
       return option;
     });
-    // builder.addSubcommand, builder.addStringOption, etc.
   },
   async run(interaction) {
-    console.log(`Interaction Started`);
+    // Conducts the Channel Setup
     await setupChannelCost(
       interaction.guildId,
       interaction.channelId,
       interaction.options.getNumber("cost")
     );
 
-    console.log(
-      `Confirming up role permissions ${interaction.guild?.roles.cache.map(
-        (r) => r.name
-      )}`
-    );
     // Creates Muted Role if it doesn't exist.
     let role = await interaction.guild?.roles.cache.find(
       (r) => r.name === "Muted"
     );
-    console.log(`Role: ${role}`);
     if (!role) {
       role = await interaction.guild?.roles.create({
         name: "Muted",
@@ -73,12 +66,12 @@ export default new SlashCommand({
       });
     }
 
+    // Sets Channel Specific Permissions for the `Muted` Role.
     interaction.channel.type === ChannelType.GuildText &&
       interaction.channel?.permissionOverwrites.create(role!, {
         SendMessages: false, // Disallow sending messages for this role
       });
 
-    // todo: code of command or sub-commands here
     return interaction.reply({
       content: `Channel initialized successfully! Cost per Character set to: ${interaction.options.getNumber(
         "cost"
