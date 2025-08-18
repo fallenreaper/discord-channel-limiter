@@ -1,7 +1,7 @@
+import { ChannelType } from "discord.js";
 import { MAX_ALLOWANCE } from "#config";
 import { SlashCommand } from "#core/slash";
 import channelLimits from "#tables/channelLimits";
-import { ChannelType } from "discord.js";
 
 const setupChannelCost = async (
   guildId: string | null,
@@ -49,6 +49,12 @@ export default new SlashCommand({
     });
   },
   async run(interaction) {
+    if (interaction.user.id !== interaction.guild?.ownerId) {
+      return interaction.reply({
+        content: "Only the server owner can initialize channels.",
+        ephemeral: true,
+      });
+    }
     // Conducts the Channel Setup
     await setupChannelCost(
       interaction.guildId,

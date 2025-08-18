@@ -1,60 +1,60 @@
-import { INITIAL_POINTS } from "#config";
-import { Listener } from "#core/listener";
-import channelLimits from "#tables/channelLimits";
-import userInformation from "#tables/userInformation";
+import { INITIAL_POINTS } from "#config"
+import { Listener } from "#core/listener"
+import channelLimits from "#tables/channelLimits"
+import userInformation from "#tables/userInformation"
 
 /**
  * See the {@link https://ghom.gitbook.io/bot.ts/usage/create-a-listener listener guide} for more information.
  */
 export default new Listener({
-  event: "messageCreate",
-  description: "listens for users and sets mute status as needed",
-  async run(message) {
-    if (message.author.bot) return;
+	event: "messageCreate",
+	description: "listens for users and sets mute status as needed",
+	async run(message) {
+		if (message.author.bot) return
 
-    let channelInfo = await channelLimits.query
-      .where({
-        channel_id: message.channel.id,
-        guild_id: message.guildId!,
-      })
-      .first();
+		const channelInfo = await channelLimits.query
+			.where({
+				channel_id: message.channel.id,
+				guild_id: message.guildId!,
+			})
+			.first()
 
-    // No Channel Limits are Set.
-    if (!channelInfo) {
-      return;
-    }
-    // Sets the Cost for business.
-    const cost = message.content.length * channelInfo.cost;
+		// No Channel Limits are Set.
+		if (!channelInfo) {
+			return
+		}
+		// Sets the Cost for business.
+		const cost = message.content.length * channelInfo.cost
 
-    let isNewUser = false;
-    let userInfo = await userInformation.query
-      .where({
-        user_id: message.author.id,
-      })
-      .first();
-    if (!userInfo) {
-      isNewUser = true;
-      userInfo = {
-        user_id: message.author.id,
-        guild_id: message.guildId!,
-        allowance: INITIAL_POINTS,
-      };
-    }
-    // Makes adjustments to the user's allowance
-    userInfo.allowance -= cost;
+		let isNewUser = false
+		let userInfo = await userInformation.query
+			.where({
+				user_id: message.author.id,
+			})
+			.first()
+		if (!userInfo) {
+			isNewUser = true
+			userInfo = {
+				user_id: message.author.id,
+				guild_id: message.guildId!,
+				allowance: INITIAL_POINTS,
+			}
+		}
+		// Makes adjustments to the user's allowance
+		userInfo.allowance -= cost
 
-    // If it dropped below user, apply the Muted role.
-    if (userInfo.allowance < 0) {
-      message.member?.roles.add(
-        message.guild?.roles.cache.find((r) => r.name === "Muted")!
-      );
-    }
+		// If it dropped below user, apply the Muted role.
+		if (userInfo.allowance < 0) {
+			message.member?.roles.add(
+				message.guild?.roles.cache.find((r) => r.name === "Muted")!,
+			)
+		}
 
-    // Update or Insert the user information.
-    if (isNewUser) {
-      await userInformation.query.insert(userInfo);
-    } else {
-      await userInformation.query.update(userInfo);
-    }
-  },
-});
+		// Update or Insert the user information.
+		if (isNewUser) {
+			await userInformation.query.insert(userInfo)
+		} else {
+			await userInformation.query.update(userInfo)
+		}
+	},
+})
