@@ -1,8 +1,8 @@
-import { Table } from "@ghom/orm"
+import { Table } from "@ghom/orm";
 
 export interface UserInformation {
-  user_id: string
-  allowance: number
+  user_id: string;
+  allowance: number;
 }
 
 /**
@@ -13,7 +13,7 @@ export default new Table<UserInformation>({
   description: "user metadata for character allowance",
   setup: (table) => {
     // setup table columns => https://knexjs.org/guide/schema-builder.html
-    table.string("user_id").notNullable().unique()
-    table.integer("allowance").notNullable()
+    table.string("user_id").notNullable().unique();
+    table.integer("allowance").notNullable().defaultTo(0);
   },
-})
+});

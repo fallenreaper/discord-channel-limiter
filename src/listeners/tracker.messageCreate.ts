@@ -24,15 +24,17 @@ export default new Listener({
     if (!channelInfo) {
       return;
     }
-
+    console.log(`Channel Info Found: ${channelInfo.cost}`);
     const cost = message.content.length * channelInfo.cost;
 
+    let isNewUser = false;
     let userInfo = await userInformation.query
       .where({
         user_id: message.author.id,
       })
       .first();
     if (!userInfo) {
+      isNewUser = true;
       userInfo = {
         user_id: message.author.id,
         allowance: 10000,
@@ -40,12 +42,20 @@ export default new Listener({
     }
     userInfo.allowance -= cost;
 
+    console.log(`User Allowance: ${userInfo.allowance}, Cost: ${cost}`);
     // If it dropped below user, apply the Muted role.
     if (userInfo.allowance < 0) {
-      message.member?.roles.add("Muted");
+      message.member?.roles.add(
+        message.guild?.roles.cache.find((r) => r.name === "Muted")!
+      );
     }
 
     // Update or Insert the user information.
-    await userInformation.query.upsert(userInfo);
+    if (isNewUser) {
+      await userInformation.query.insert(userInfo);
+    } else {
+      await userInformation.query.update(userInfo);
+    }
+    console.log("Finished.");
   },
 });

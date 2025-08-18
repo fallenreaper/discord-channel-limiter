@@ -14,14 +14,10 @@ export default new Cron({
       /// TODO: Set this upper allowance limit to a config value
       if (user.allowance < 10000) {
         user.allowance += 100;
-        return userInformation.query.update(user);
+        return userInformation.query
+          .update({ allowance: user.allowance })
+          .where({ user_id: user.user_id });
       }
-
-      // Guild.members.fetch(user.user_id).then((member) => {
-      //   if (member.roles.cache.has("Muted")) {
-      //     member.roles.remove("Muted").catch(console.error);
-      //   }
-      // });
 
       return Promise.resolve();
     });

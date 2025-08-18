@@ -7,11 +7,27 @@ const setupChannelCost = async (
   channelId: string,
   cost: number | null
 ) => {
-  await channelLimits.query.insert({
-    guild_id: guildId!,
-    channel_id: channelId,
-    cost: cost!,
-  });
+  const limit = await channelLimits.query
+    .where({
+      guild_id: guildId!,
+      channel_id: channelId,
+    })
+    .first();
+  if (!limit) {
+    return await channelLimits.query.insert({
+      guild_id: guildId!,
+      channel_id: channelId,
+      cost: cost!,
+    });
+  }
+  return await channelLimits.query
+    .update({
+      cost: cost || 0,
+    })
+    .where({
+      guild_id: guildId!,
+      channel_id: channelId,
+    });
 };
 
 /**
@@ -33,14 +49,23 @@ export default new SlashCommand({
     // builder.addSubcommand, builder.addStringOption, etc.
   },
   async run(interaction) {
+    console.log(`Interaction Started`);
     await setupChannelCost(
       interaction.guildId,
       interaction.channelId,
       interaction.options.getNumber("cost")
     );
 
+    console.log(
+      `Confirming up role permissions ${interaction.guild?.roles.cache.map(
+        (r) => r.name
+      )}`
+    );
     // Creates Muted Role if it doesn't exist.
-    let role = await interaction.guild?.roles.fetch("Muted");
+    let role = await interaction.guild?.roles.cache.find(
+      (r) => r.name === "Muted"
+    );
+    console.log(`Role: ${role}`);
     if (!role) {
       role = await interaction.guild?.roles.create({
         name: "Muted",
