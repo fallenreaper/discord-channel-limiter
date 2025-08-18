@@ -37,16 +37,16 @@
     ]
   },
   "scripts": {
-    "bot": "pnpx @ghom/bot.ts-cli",
-    "build": "rimraf dist && pnpx rollup -c && node scripts/copy-keepers.js",
-    "final": "rimraf node_modules && pnpm install --production && pnpm run build",
+    "bot": "npx @ghom/bot.ts-cli",
+    "build": "rimraf dist && npx rollup -c && node scripts/copy-keepers.js",
+    "final": "rimraf node_modules && npm install --production && npm run build",
     "watch": "echo \"No watch support for this runtime\" && exit 1",
-    "start": "pnpm run build && node dist/index.js",
-    "start.test": "pnpm run build && node dist/index.test.js",
-    "format": "pnpx biome check --write src scripts package.json",
+    "start": "npm run build && node dist/index.js",
+    "start.test": "npm run build && node dist/index.test.js",
+    "format": "npx biome check --write src scripts package.json",
     "update": "node scripts/update-framework.js",
-    "readme": "pnpm run build && node scripts/generate-readme.js",
-    "test": "pnpm run format && tsc --noEmit && pnpm run start.test"
+    "readme": "npm run build && node scripts/generate-readme.js",
+    "test": "npm run format && tsc --noEmit && npm run start.test"
   },
   "license": "ISC",
   "repository": {
