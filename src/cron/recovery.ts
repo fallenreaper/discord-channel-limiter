@@ -8,15 +8,31 @@ import { Guild } from "discord.js";
 export default new Cron({
   name: "recovery",
   description: "recovers tokens for messaging",
-  schedule: { type: "minute", duration: 1 } /* every 2 hours */,
+  schedule: { type: "minute", duration: 1 } /* every 1 minute */,
   async run() {
-    (await userInformation.query).forEach((user) => {
-      /// TODO: Set this upper allowance limit to a config value
+    (await userInformation.query).forEach(async (user) => {
+      console.log(`Recovering user ${user.user_id}`);
+      const allowance = user.allowance + 100;
       if (user.allowance < 10000) {
-        user.allowance += 100;
-        return userInformation.query
-          .update({ allowance: user.allowance })
+        console.log(
+          `Adding 100 tokens to ${user.user_id}. New allowance: ${allowance}`
+        );
+        await userInformation.query
+          .update({ allowance: allowance })
           .where({ user_id: user.user_id });
+      }
+
+      if (allowance >= 0) {
+        /// TODO: Remove the Muted role if it exists.
+        const guild = await Guild.fetch(user.guild_id);
+        const mutedRole = guild.roles.cache.find((r) => r.name === "Muted");
+        if (mutedRole) {
+          const member = await guild.members.fetch(user.user_id);
+          if (member.roles.cache.has(mutedRole.id)) {
+            console.log(`Removing Muted role from ${user.user_id}`);
+            await member.roles.remove(mutedRole);
+          }
+        }
       }
 
       return Promise.resolve();
