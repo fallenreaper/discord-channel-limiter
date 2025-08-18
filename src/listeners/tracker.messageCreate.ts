@@ -1,3 +1,4 @@
+import { INITIAL_POINTS } from "#config";
 import { Listener } from "#core/listener";
 import channelLimits from "#tables/channelLimits";
 import userInformation from "#tables/userInformation";
@@ -36,7 +37,7 @@ export default new Listener({
       userInfo = {
         user_id: message.author.id,
         guild_id: message.guildId!,
-        allowance: 10000,
+        allowance: INITIAL_POINTS,
       };
     }
     // Makes adjustments to the user's allowance

@@ -1,7 +1,8 @@
+import { MAX_ALLOWANCE, POINTS_PER_MINUTE } from "#config";
 import client from "#core/client";
 import { Cron } from "#core/cron";
 import userInformation from "#tables/userInformation";
-import { Guild, GuildMember, Role, User } from "discord.js";
+import { Role } from "discord.js";
 
 /**
  * See the {@link https://ghom.gitbook.io/bot.ts/usage/create-a-cron cron guide} for more information.
@@ -14,8 +15,8 @@ export default new Cron({
   async run() {
     // Loops throughh all users in the userInformation Table.
     (await userInformation.query).forEach(async (user) => {
-      const allowance = user.allowance + 100;
-      if (user.allowance < 10000) {
+      const allowance = user.allowance + POINTS_PER_MINUTE;
+      if (user.allowance < MAX_ALLOWANCE) {
         await userInformation.query
           .update({ allowance: allowance })
           .where({ user_id: user.user_id });

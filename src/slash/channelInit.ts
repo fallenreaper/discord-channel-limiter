@@ -1,3 +1,4 @@
+import { MAX_ALLOWANCE } from "#config";
 import { SlashCommand } from "#core/slash";
 import channelLimits from "#tables/channelLimits";
 import { ChannelType } from "discord.js";
@@ -43,7 +44,7 @@ export default new SlashCommand({
         .setDescription("The cost per character in the channel")
         .setRequired(true)
         .setMinValue(0)
-        .setMaxValue(10000);
+        .setMaxValue(MAX_ALLOWANCE);
       return option;
     });
   },

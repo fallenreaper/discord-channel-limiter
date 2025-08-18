@@ -8,6 +8,7 @@ export default new SlashCommand({
   name: "channel-cost",
   description: "gets the current channel cost",
   async run(interaction) {
+    //Get the channel Information
     const channel = await channelLimits.query
       .where({
         guild_id: interaction.guildId!,
