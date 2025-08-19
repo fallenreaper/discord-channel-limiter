@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy the necessary files for dependency installation
 COPY package.json .
-COPY package-lock.yaml .
+COPY package-lock.json .
 
 # Install dependencies based on the package manager
 
@@ -20,6 +20,6 @@ COPY . .
 
 # Build and run command
 
-RUN npm build
+RUN npm run build
 CMD ["node", "dist/index.js"]
 
