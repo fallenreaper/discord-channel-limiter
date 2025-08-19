@@ -16,6 +16,7 @@ export default new SlashCommand({
       })
       .first();
 
+    console.log("Channel Cost:", channel?.cost);
     return interaction.reply({
       content: `The current cost for this channel is ${
         channel?.cost ?? "not set"

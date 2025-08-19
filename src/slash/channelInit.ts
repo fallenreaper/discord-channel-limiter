@@ -55,6 +55,13 @@ export default new SlashCommand({
         ephemeral: true,
       });
     }
+
+    console.log(
+      "Initializing channel:",
+      interaction.channelId,
+      "with cost:",
+      interaction.options.getNumber("cost")
+    );
     // Conducts the Channel Setup
     await setupChannelCost(
       interaction.guildId,

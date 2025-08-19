@@ -43,6 +43,9 @@ export default new Listener({
     // Makes adjustments to the user's allowance
     userInfo.allowance -= cost;
 
+    console.log(
+      `${isNewUser} User ${message.author.id} has a cost of ${cost}, new allowance is ${userInfo.allowance}`
+    );
     // If it dropped below user, apply the Muted role.
     if (userInfo.allowance < 0) {
       message.member?.roles.add(
@@ -54,7 +57,9 @@ export default new Listener({
     if (isNewUser) {
       await userInformation.query.insert(userInfo);
     } else {
-      await userInformation.query.update(userInfo);
+      await userInformation.query.update(userInfo).where({
+        user_id: message.author.id,
+      });
     }
   },
 });
