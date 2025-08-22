@@ -2,7 +2,7 @@
 
 # chat-monitor
 
-> Made with [bot.ts](https://ghom.gitbook.io/bot-ts/) by **\_\_fallenreaper**  
+> Made with [bot.ts](https://ghom.gitbook.io/bot-ts/) by **__fallenreaper**  
 > CLI version: `9.0.14`  
 > Bot.ts version: `v9.0.0-Nirbose`  
 > Licence: `ISC`
@@ -19,89 +19,69 @@ Below you will find the specifications for **chat-monitor**.
 
 ## Configuration file
 
-In order to ensure data is available, you can see below that the MAX_ALLOWANCE etc are all set within your `.env` file. So follow the example from your [env](/.env.local) instead of hardcoding the config file.
-
 ```ts
-import { Options, Partials } from "discord.js";
-import { z } from "zod";
-import { Config } from "#core/config";
+import { Options, Partials } from "discord.js"
+import { z } from "zod"
+import { Config } from "#core/config"
 
 export const MAX_ALLOWANCE = Number.parseInt(
-  process.env.MAX_ALLOWANCE || "10000",
-  10
-);
+	process.env.MAX_ALLOWANCE || "10000",
+	10,
+)
 export const INITIAL_POINTS = Number.parseInt(
-  process.env.INITIAL_POINTS || "10000",
-  10
-);
+	process.env.INITIAL_POINTS || "10000",
+	10,
+)
 export const POINTS_PER_MINUTE = Number.parseInt(
-  process.env.POINTS_PER_MINUTE || "50",
-  10
-);
+	process.env.POINTS_PER_MINUTE || "50",
+	10,
+)
 
 export const config = new Config({
-  ignoreBots: true,
-  openSource: true,
-  envSchema: z.object({}),
-  permissions: ["Administrator"],
-  client: {
-    intents: [
-      "Guilds",
-      "GuildMessages",
-      "GuildMessageReactions",
-      "GuildMessageTyping",
-      "DirectMessages",
-      "DirectMessageReactions",
-      "DirectMessageTyping",
-      "MessageContent",
-      "GuildMembers",
-      "GuildModeration",
-      "AutoModerationConfiguration",
-      "AutoModerationExecution",
-      "GuildBans",
-      "GuildIntegrations",
-      "GuildModeration",
-    ],
-    partials: [Partials.Channel],
-    makeCache: Options.cacheWithLimits({
-      ...Options.DefaultMakeCacheSettings,
+	ignoreBots: true,
+	openSource: true,
+	envSchema: z.object({}),
+	permissions: ["Administrator"],
+	client: {
+		intents: [
+			"Guilds",
+			"GuildMessages",
+			"GuildMessageReactions",
+			"GuildMessageTyping",
+			"DirectMessages",
+			"DirectMessageReactions",
+			"DirectMessageTyping",
+			"MessageContent",
+			"GuildMembers",
+			"GuildModeration",
+			"AutoModerationConfiguration",
+			"AutoModerationExecution",
+			"GuildBans",
+			"GuildIntegrations",
+			"GuildModeration",
+		],
+		partials: [Partials.Channel],
+		makeCache: Options.cacheWithLimits({
+			...Options.DefaultMakeCacheSettings,
 
-      // don't cache reactions
-      ReactionManager: 0,
-    }),
-    sweepers: {
-      ...Options.DefaultSweeperSettings,
-      messages: {
-        // every hour (in second)
-        interval: 60 * 60,
+			// don't cache reactions
+			ReactionManager: 0,
+		}),
+		sweepers: {
+			...Options.DefaultSweeperSettings,
+			messages: {
+				// every hour (in second)
+				interval: 60 * 60,
 
-        // 6 hours
-        lifetime: 60 * 60 * 6,
-      },
-    },
-  },
-});
+				// 6 hours
+				lifetime: 60 * 60 * 6,
+			},
+		},
+	},
+})
 
-export default config.options;
-```
+export default config.options
 
-## Running the App
-
-When you have the information set up and configured for your bot, you will then need to invite it to your server. When it is time to start the bot, if you are looking at the source code there are a few ways to do it.
-
-### First Way
-
-```bash
-npm ci
-npm run start
-```
-
-### Second Way
-
-You may want to use docker. If it is running locally, you can set up and run it through the docker compose information.
-
-```bash
-docker-compose up -d
 ```
 
 ## Cron jobs
@@ -112,18 +92,15 @@ docker-compose up -d
 
 ### Slash commands
 
-- [/channel-cost](src/slash/channelCost.ts) - gets the current channel cost
-- [/channel-init](src/slash/channelInit.ts) - initializes a channel to marketing
-- [/help](src/slash/help.native.ts) - Show slash command details or list all slash commands
+- [/channel-cost](src/slash/channelCost.ts) - gets the current channel cost  
+- [/channel-init](src/slash/channelInit.ts) - initializes a channel to marketing  
+- [/help](src/slash/help.native.ts) - Show slash command details or list all slash commands  
 - [/tokens](src/slash/tokens.ts) - get your current token count
 
 ### Textual commands
 
-- [database](src/commands/database.native.ts) - Run SQL query on database
-- [eval](src/commands/eval.native.ts) - JS code evaluator
-- [help](src/commands/help.native.ts) - Help menu
-- [info](src/commands/info.native.ts) - Get information about bot
-- [terminal](src/commands/terminal.native.ts) - Run shell command from Discord
+- [help](src/commands/help.native.ts) - Help menu  
+- [info](src/commands/info.native.ts) - Get information about bot  
 - [turn](src/commands/turn.native.ts) - Turn on/off command handling
 
 ## Buttons
@@ -132,34 +109,34 @@ docker-compose up -d
 
 ## Listeners
 
-### Button
+### Button  
 
-- [interactionCreate](src/listeners/button.interactionCreate.native.ts) - Handle the interactions for buttons
+- [interactionCreate](src/listeners/button.interactionCreate.native.ts) - Handle the interactions for buttons  
 
-### Command
+### Command  
 
-- [messageCreate](src/listeners/command.messageCreate.native.ts) - Handle the messages for commands
+- [messageCreate](src/listeners/command.messageCreate.native.ts) - Handle the messages for commands  
 
-### Cron
+### Cron  
 
-- [ready](src/listeners/cron.ready.native.ts) - Launch all cron jobs
+- [ready](src/listeners/cron.ready.native.ts) - Launch all cron jobs  
 
-### Log
+### Log  
 
-- [afterReady](src/listeners/log.afterReady.native.ts) - Just log that bot is ready
+- [afterReady](src/listeners/log.afterReady.native.ts) - Just log that bot is ready  
 
-### Pagination
+### Pagination  
 
-- [messageDelete](src/listeners/pagination.messageDelete.native.ts) - Remove existing deleted paginator
-- [messageReactionAdd](src/listeners/pagination.messageReactionAdd.native.ts) - Handle the reactions for pagination
+- [messageDelete](src/listeners/pagination.messageDelete.native.ts) - Remove existing deleted paginator  
+- [messageReactionAdd](src/listeners/pagination.messageReactionAdd.native.ts) - Handle the reactions for pagination  
 
-### Slash
+### Slash  
 
-- [guildCreate](src/listeners/slash.guildCreate.native.ts) - Deploy the slash commands to the new guild
-- [interactionCreate](src/listeners/slash.interactionCreate.native.ts) - Handle the interactions for slash commands
-- [ready](src/listeners/slash.ready.native.ts) - Deploy the slash commands
+- [guildCreate](src/listeners/slash.guildCreate.native.ts) - Deploy the slash commands to the new guild  
+- [interactionCreate](src/listeners/slash.interactionCreate.native.ts) - Handle the interactions for slash commands  
+- [ready](src/listeners/slash.ready.native.ts) - Deploy the slash commands  
 
-### Tracker
+### Tracker  
 
 - [messageCreate](src/listeners/tracker.messageCreate.ts) - listens for users and sets mute status as needed
 
@@ -168,7 +145,7 @@ docker-compose up -d
 Using **sqlite3@latest** as database.  
 Below you will find a list of all the tables used by **chat-monitor**.
 
-- [channelLimits](src/tables/channelLimits.ts) - costs incurred for specific channels
+- [channelLimits](src/tables/channelLimits.ts) - costs incurred for specific channels  
 - [userInformation](src/tables/userInformation.ts) - user metadata for character allowance
 
 ## Information
@@ -177,4 +154,4 @@ This readme.md is dynamic, it will update itself with the latest information.
 If you see a mistake, please report it and an update will be made as soon as possible.
 
 - Used by: **1** Discord guild
-- Last update date: **8/18/2025**
+- Last update date: **8/22/2025**
