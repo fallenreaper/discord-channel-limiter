@@ -1,28 +1,28 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
-import fs from "node:fs"
-import util from "node:util"
-import { z } from "zod"
+import fs from "node:fs";
+import util from "node:util";
+import { z } from "zod";
 
-import { config } from "#config"
-import * as logger from "#core/logger"
-import { rootPath } from "#core/util"
+import { config } from "#config";
+import * as logger from "#core/logger";
+import { rootPath } from "#core/util";
 
 dotenv.config({
 	path: rootPath(".env"),
 	override: false,
-})
+});
 
 const localeList: { key: string; name: string }[] = JSON.parse(
 	fs.readFileSync(rootPath("node_modules", "dayjs", "locale.json"), "utf-8"),
-)
+);
 
 const localeKeys = localeList.map((locale) => locale.key) as [
 	string,
 	...string[],
-]
+];
 
-const timezones = Intl.supportedValuesOf("timeZone") as [string, ...string[]]
+const timezones = Intl.supportedValuesOf("timeZone") as [string, ...string[]];
 
 const envSchema = z.object({
 	BOT_TOKEN: z.string({
@@ -121,13 +121,13 @@ const envSchema = z.object({
 			"PACKAGE_MANAGER",
 		)} in the .env file, for example: PACKAGE_MANAGER="yarn". You can choose between this list:\n=> npm, yarn, pnpm, bun`,
 	}),
-})
+});
 
-type CustomSchema = (typeof config)["options"]["envSchema"]
+type CustomSchema = (typeof config)["options"]["envSchema"];
 
-type Env = z.infer<typeof envSchema> & z.infer<CustomSchema>
+type Env = z.infer<typeof envSchema> & z.infer<CustomSchema>;
 
-let env: Env
+let env: Env;
 
 if (process.env.BOT_MODE !== "test") {
 	try {
@@ -136,14 +136,14 @@ if (process.env.BOT_MODE !== "test") {
 			...("envSchema" in config.options
 				? config.options.envSchema?.parse(process.env)
 				: {}),
-		} as Env
+		} as Env;
 	} catch (error) {
-		const { errors } = error as z.ZodError
-		errors.forEach((err) => logger.error(err.message, ".env"))
-		process.exit(1)
+		const { errors } = error as z.ZodError;
+		errors.forEach((err) => logger.error(err.message, ".env"));
+		process.exit(1);
 	}
 } else {
-	env = process.env as unknown as Env
+	env = process.env as unknown as Env;
 }
 
-export default env
+export default env;

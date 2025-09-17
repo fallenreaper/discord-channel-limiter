@@ -1,8 +1,8 @@
-import regexParser from "regex-parser"
-import * as argument from "#core/argument"
-import { commands } from "#core/command"
-import { slashCommands } from "#core/slash"
-import * as util from "#core/util"
+import regexParser from "regex-parser";
+import * as argument from "#core/argument";
+import { commands } from "#core/command";
+import { slashCommands } from "#core/slash";
+import * as util from "#core/util";
 
 /**
  * Type resolvers for textual commands. <br>
@@ -22,17 +22,17 @@ export const types = [
 	 */
 	new argument.TypeResolver("number", {
 		resolver: async (value) => {
-			if (typeof value === "number") return value
+			if (typeof value === "number") return value;
 
-			const number = Number(value.replace(/_/g, ""))
+			const number = Number(value.replace(/_/g, ""));
 
 			if (Number.isNaN(number))
 				throw new argument.TypeResolverError("Invalid number", {
 					expected: [123, 0.5, 1_000],
 					provided: value,
-				})
+				});
 
-			return number
+			return number;
 		},
 	}),
 
@@ -45,9 +45,9 @@ export const types = [
 				throw new argument.TypeResolverError("Invalid boolean", {
 					expected: [true, false, "yes", "no", "on", "off", 1, 0],
 					provided: value,
-				})
+				});
 
-			return /^(?:true|1|oui|on|o|y|yes)$/i.test(String(value))
+			return /^(?:true|1|oui|on|o|y|yes)$/i.test(String(value));
 		},
 	}),
 
@@ -57,7 +57,7 @@ export const types = [
 	new argument.TypeResolver("regex", {
 		resolver: async (value) => {
 			try {
-				return regexParser(String(value))
+				return regexParser(String(value));
 			} catch (error) {
 				throw new argument.TypeResolverError(
 					error instanceof Error ? error.message : "Invalid regular expression",
@@ -65,7 +65,7 @@ export const types = [
 						expected: ["/^foo$/", "foo", "foo|bar"],
 						provided: value,
 					},
-				)
+				);
 			}
 		},
 	}),
@@ -75,15 +75,15 @@ export const types = [
 	 */
 	new argument.TypeResolver("date", {
 		resolver: async (value) => {
-			const date = util.dayjs(value)
+			const date = util.dayjs(value);
 
 			if (!date.isValid())
 				throw new argument.TypeResolverError("Invalid date", {
 					expected: ["2021-12-31", "2021-12-31T23:59:59"],
 					provided: value,
-				})
+				});
 
-			return date.toDate()
+			return date.toDate();
 		},
 	}),
 
@@ -93,15 +93,15 @@ export const types = [
 	argument.TypeResolver.fromRegex("duration", {
 		regex: /^(\d+)\s*(second|minute|hour|day|week|month|year)s?$/,
 		transformer: (match, value, type) => {
-			const date = util.dayjs().add(+value, type as any)
+			const date = util.dayjs().add(+value, type as any);
 
 			if (!date.isValid())
 				throw new argument.TypeResolverError("Invalid duration", {
 					expected: ["1 minute", "3 days", "1 month"],
 					provided: match,
-				})
+				});
 
-			return date.valueOf() - util.dayjs().valueOf()
+			return date.valueOf() - util.dayjs().valueOf();
 		},
 	}),
 
@@ -111,7 +111,7 @@ export const types = [
 	new argument.TypeResolver("json", {
 		resolver: async (value) => {
 			try {
-				return JSON.parse(String(value))
+				return JSON.parse(String(value));
 			} catch (error) {
 				throw new argument.TypeResolverError(
 					error instanceof Error ? error.message : "Invalid JSON",
@@ -119,7 +119,7 @@ export const types = [
 						expected: ['{ "key": 42 }', "foo bar", 42],
 						provided: value,
 					},
-				)
+				);
 			}
 		},
 	}),
@@ -134,13 +134,13 @@ export const types = [
 				.split(",")
 				.map((v) =>
 					/^\d+$/.test(v) ? Number(v) : /true|false/.test(v) ? v === "true" : v,
-				)
+				);
 		},
 	}),
 
 	new argument.TypeResolver("string[]", {
 		resolver: async (value) => {
-			return String(value).split(",")
+			return String(value).split(",");
 		},
 	}),
 
@@ -148,7 +148,7 @@ export const types = [
 		resolver: async (value) => {
 			return String(value)
 				.split(",")
-				.map((v) => Number(v))
+				.map((v) => Number(v));
 		},
 	}),
 
@@ -156,7 +156,7 @@ export const types = [
 		resolver: async (value) => {
 			return String(value)
 				.split(",")
-				.map((v) => v === "true")
+				.map((v) => v === "true");
 		},
 	}),
 
@@ -165,16 +165,16 @@ export const types = [
 			return String(value)
 				.split(",")
 				.map((v) => {
-					const date = util.dayjs(v)
+					const date = util.dayjs(v);
 
 					if (!date.isValid())
 						throw new argument.TypeResolverError("Invalid date", {
 							expected: ["2021-12-31", "2021-12-31T23:59:59"],
 							provided: v,
-						})
+						});
 
-					return date.toDate()
-				})
+					return date.toDate();
+				});
 		},
 	}),
 
@@ -184,136 +184,138 @@ export const types = [
 
 	new argument.TypeResolver("user", {
 		resolver: async (value, message) => {
-			const regex = /^(?:<@!?(\d+)>|(\d+))$/
-			const match = String(value).match(regex)
+			const regex = /^(?:<@!?(\d+)>|(\d+))$/;
+			const match = String(value).match(regex);
 
 			if (match) {
-				const id = match[1] ?? match[2]
+				const id = match[1] ?? match[2];
 
 				try {
-					return await message.client.users.fetch(id)
+					return await message.client.users.fetch(id);
 				} catch {
 					throw new argument.TypeResolverError("Invalid user ID", {
 						expected: ["123456789012345678", "<@123456789012345678>"],
 						provided: id,
-					})
+					});
 				}
 			}
 
 			const user = message.client.users.cache.find((user) => {
-				return user.username.toLowerCase().includes(String(value).toLowerCase())
-			})
+				return user.username
+					.toLowerCase()
+					.includes(String(value).toLowerCase());
+			});
 
-			if (!user) throw new Error("User not found")
+			if (!user) throw new Error("User not found");
 
-			return user
+			return user;
 		},
 	}),
 
 	new argument.TypeResolver("member", {
 		resolver: async (value, message) => {
-			const regex = /^(?:<@!?(\d+)>|(\d+))$/
-			const match = String(value).match(regex)
+			const regex = /^(?:<@!?(\d+)>|(\d+))$/;
+			const match = String(value).match(regex);
 
 			if (!message.guild)
-				throw new Error("You must be in a guild to chose a member")
+				throw new Error("You must be in a guild to chose a member");
 
 			if (match) {
-				const id = match[1] ?? match[2]
+				const id = match[1] ?? match[2];
 
 				try {
-					return await message.guild.members.fetch(id)
+					return await message.guild.members.fetch(id);
 				} catch {
 					throw new argument.TypeResolverError("Invalid member ID", {
 						expected: ["123456789012345678", "<@123456789012345678>"],
 						provided: id,
-					})
+					});
 				}
 			}
 
-			const members = await message.guild.members.fetch()
+			const members = await message.guild.members.fetch();
 
 			const member = members.find((member) => {
 				return member.displayName
 					.toLowerCase()
-					.includes(String(value).toLowerCase())
-			})
+					.includes(String(value).toLowerCase());
+			});
 
-			if (!member) throw new Error("Member not found")
+			if (!member) throw new Error("Member not found");
 
-			return member
+			return member;
 		},
 	}),
 
 	new argument.TypeResolver("channel", {
 		resolver: async (value, message) => {
-			const regex = /^(?:<#(\d+)>|(\d+))$/
-			const match = String(value).match(regex)
+			const regex = /^(?:<#(\d+)>|(\d+))$/;
+			const match = String(value).match(regex);
 
 			if (match) {
-				const id = match[1] ?? match[2]
-				const channel = message.client.channels.cache.get(id)
+				const id = match[1] ?? match[2];
+				const channel = message.client.channels.cache.get(id);
 
 				if (!channel)
 					throw new argument.TypeResolverError("Invalid channel ID", {
 						expected: ["123456789012345678", "<#123456789012345678>"],
 						provided: id,
-					})
+					});
 
-				return channel
+				return channel;
 			}
 
 			const channel = message.guild?.channels.cache.find((channel) => {
-				return channel.name.toLowerCase().includes(String(value).toLowerCase())
-			})
+				return channel.name.toLowerCase().includes(String(value).toLowerCase());
+			});
 
-			if (!channel) throw new Error("Channel not found")
+			if (!channel) throw new Error("Channel not found");
 
-			return channel
+			return channel;
 		},
 	}),
 
 	new argument.TypeResolver("role", {
 		resolver: async (value, message) => {
 			if (!message.guild)
-				throw new Error("You must be in a guild to chose a role")
+				throw new Error("You must be in a guild to chose a role");
 
-			const regex = /^(?:<@&(\d+)>|(\d+))$/
-			const match = String(value).match(regex)
+			const regex = /^(?:<@&(\d+)>|(\d+))$/;
+			const match = String(value).match(regex);
 
 			if (match) {
-				const id = match[1] ?? match[2]
+				const id = match[1] ?? match[2];
 
 				try {
-					return message.guild.roles.fetch(id)
+					return message.guild.roles.fetch(id);
 				} catch {
 					throw new argument.TypeResolverError("Invalid role ID", {
 						expected: ["123456789012345678", "<@&123456789012345678>"],
 						provided: id,
-					})
+					});
 				}
 			}
 
-			const roles = await message.guild.roles.fetch()
+			const roles = await message.guild.roles.fetch();
 
 			const role = roles.find((role) => {
-				return role.name.toLowerCase().includes(String(value).toLowerCase())
-			})
+				return role.name.toLowerCase().includes(String(value).toLowerCase());
+			});
 
-			if (!role) throw new Error("Role not found")
+			if (!role) throw new Error("Role not found");
 
-			return role
+			return role;
 		},
 	}),
 
 	new argument.TypeResolver("emote", {
 		resolver: async (value, message) => {
-			const regex = /^(?:<a?:\w+:(\d+)>|(\d+))$/
-			const match = String(value).match(regex)
+			const regex = /^(?:<a?:\w+:(\d+)>|(\d+))$/;
+			const match = String(value).match(regex);
 
 			if (match) {
-				const id = match[1] ?? match[2]
-				const emoji = message.client.emojis.cache.get(id)
+				const id = match[1] ?? match[2];
+				const emoji = message.client.emojis.cache.get(id);
 
 				if (!emoji)
 					throw new argument.TypeResolverError("Invalid emoji ID", {
@@ -323,49 +325,49 @@ export const types = [
 							"<a:name:123456789012345678>",
 						],
 						provided: id,
-					})
+					});
 
-				return emoji
+				return emoji;
 			}
 
-			const matchUnicode = util.emojiRegex.exec(String(value))
+			const matchUnicode = util.emojiRegex.exec(String(value));
 
-			if (matchUnicode) return matchUnicode[0]
+			if (matchUnicode) return matchUnicode[0];
 
 			const emoji = message.client.emojis.cache.find((emoji) => {
-				return emoji.name?.toLowerCase().includes(String(value).toLowerCase())
-			})
+				return emoji.name?.toLowerCase().includes(String(value).toLowerCase());
+			});
 
-			if (!emoji) throw new Error("Emoji not found")
+			if (!emoji) throw new Error("Emoji not found");
 
-			return emoji
+			return emoji;
 		},
 	}),
 
 	new argument.TypeResolver("invite", {
 		resolver: async (value, message) => {
 			if (!message.guild)
-				throw new Error("You must be in a guild to chose an invite")
+				throw new Error("You must be in a guild to chose an invite");
 
-			const regex = /^(?:https:\/\/discord.gg\/(\w+)|(\w+))$/
+			const regex = /^(?:https:\/\/discord.gg\/(\w+)|(\w+))$/;
 
-			const match = String(value).match(regex)
+			const match = String(value).match(regex);
 
 			if (!match)
 				throw new argument.TypeResolverError("Invalid invite", {
 					expected: ["https://discord.gg/abc123", "abc123"],
 					provided: value,
-				})
+				});
 
-			const invites = await message.guild.invites.fetch()
+			const invites = await message.guild.invites.fetch();
 
 			const invite = invites.find(
 				(invite) => invite.code === (match[1] ?? match[2]),
-			)
+			);
 
-			if (!invite) throw new Error("Invite not found")
+			if (!invite) throw new Error("Invite not found");
 
-			return invite
+			return invite;
 		},
 	}),
 
@@ -374,15 +376,15 @@ export const types = [
 	 */
 	new argument.TypeResolver("command", {
 		resolver: async (value) => {
-			const command = commands.resolve(String(value))
+			const command = commands.resolve(String(value));
 
 			if (!command)
 				throw new argument.TypeResolverError("Invalid command", {
 					expected: ["info", "help"],
 					provided: value,
-				})
+				});
 
-			return command
+			return command;
 		},
 	}),
 
@@ -391,15 +393,15 @@ export const types = [
 	 */
 	new argument.TypeResolver("slash", {
 		resolver: async (value) => {
-			const command = slashCommands.get(String(value))
+			const command = slashCommands.get(String(value));
 
 			if (!command)
 				throw new argument.TypeResolverError("Invalid slash command", {
 					expected: ["ping", "help"],
 					provided: value,
-				})
+				});
 
-			return command
+			return command;
 		},
 	}),
-] as const satisfies readonly argument.TypeResolver<any, any>[]
+] as const satisfies readonly argument.TypeResolver<any, any>[];

@@ -1,5 +1,5 @@
-import { SlashCommand } from "#core/slash"
-import channelLimits from "#tables/channelLimits"
+import { SlashCommand } from "#core/slash";
+import channelLimits from "#tables/channelLimits";
 
 /**
  * See the {@link https://ghom.gitbook.io/bot.ts/usage/create-a-command command guide} for more information.
@@ -14,13 +14,13 @@ export default new SlashCommand({
 				guild_id: interaction.guild?.id!,
 				channel_id: interaction.channel.id!,
 			})
-			.first()
+			.first();
 
-		console.log("Channel Cost:", channel?.cost)
+		console.log("Channel Cost:", channel?.cost);
 		return interaction.reply({
 			content: `The current cost for this channel is ${
 				channel?.cost ?? "not set"
 			}.`,
-		})
+		});
 	},
-})
+});

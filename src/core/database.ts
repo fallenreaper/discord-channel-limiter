@@ -1,15 +1,15 @@
-import fs from "node:fs"
-import path from "node:path"
+import fs from "node:fs";
+import path from "node:path";
 
-import * as orm from "@ghom/orm"
-import config from "#config"
-import env from "#core/env"
-import * as logger from "#core/logger"
-import * as util from "#core/util"
+import * as orm from "@ghom/orm";
+import config from "#config";
+import env from "#core/env";
+import * as logger from "#core/logger";
+import * as util from "#core/util";
 
-const dataDirectory = util.rootPath("data")
+const dataDirectory = util.rootPath("data");
 
-if (!fs.existsSync(dataDirectory)) fs.mkdirSync(dataDirectory)
+if (!fs.existsSync(dataDirectory)) fs.mkdirSync(dataDirectory);
 
 const client = new orm.ORM({
 	tableLocation: util.srcPath("tables"),
@@ -27,6 +27,6 @@ const client = new orm.ORM({
 	},
 	logger,
 	caching: config.ormCaching,
-})
+});
 
-export default client
+export default client;

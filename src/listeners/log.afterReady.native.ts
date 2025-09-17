@@ -1,10 +1,10 @@
 // system file, please don't modify it
 
-import util from "node:util"
+import util from "node:util";
 
-import env from "#core/env"
-import { Listener } from "#core/listener"
-import logger from "#core/logger"
+import env from "#core/env";
+import { Listener } from "#core/listener";
+import logger from "#core/logger";
 
 export default new Listener({
 	event: "afterReady",
@@ -19,6 +19,6 @@ export default new Listener({
 				"bold",
 				util.styleText("blueBright", env.BOT_PREFIX),
 			)}`,
-		)
+		);
 	},
-})
+});

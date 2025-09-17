@@ -1,24 +1,24 @@
 // system file, please don't modify it
 
-import * as discordEval from "discord-eval.ts"
-import type discord from "discord.js"
-import type yargsParser from "yargs-parser"
-import typeParser from "zod"
+import * as discordEval from "discord-eval.ts";
+import type discord from "discord.js";
+import type yargsParser from "yargs-parser";
+import typeParser from "zod";
 
-import type * as command from "#core/command"
-import * as logger from "#core/logger"
-import * as util from "#core/util"
+import type * as command from "#core/command";
+import * as logger from "#core/logger";
+import * as util from "#core/util";
 
-import type { types } from "#types"
+import type { types } from "#types";
 
-import { inspect } from "node:util"
+import { inspect } from "node:util";
 
 type _item<Items extends readonly any[], K extends string> = Extract<
 	Items[number],
 	{ name: K }
->
+>;
 
-type ValueOf<T> = T[keyof T]
+type ValueOf<T> = T[keyof T];
 
 /**
  * Extracts the outputs of an array of inputs
@@ -34,8 +34,8 @@ export type Outputs<
 		? ArgumentTypes[_item<Inputs, K>["type"]]
 		: _item<Inputs, K>["default"] extends undefined
 			? ArgumentTypes[_item<Inputs, K>["type"]] | null
-			: ArgumentTypes[_item<Inputs, K>["type"]]
-}
+			: ArgumentTypes[_item<Inputs, K>["type"]];
+};
 
 // const test: Outputs<
 //   [
@@ -63,8 +63,8 @@ export type Outputs<
  * TESTED, WORKING PERFECTLY
  */
 export type OutputFlags<Inputs extends readonly NamedArgument<any>[]> = {
-	readonly [K in Inputs[number]["name"]]: boolean
-}
+	readonly [K in Inputs[number]["name"]]: boolean;
+};
 
 /**
  * Convert the outputs of an array of inputs into an array containing the values
@@ -78,8 +78,8 @@ export type OutputPositionalValues<
 		? ArgumentTypes[_item<Inputs, K>["type"]]
 		: _item<Inputs, K>["default"] extends undefined
 			? ArgumentTypes[_item<Inputs, K>["type"]] | null
-			: ArgumentTypes[_item<Inputs, K>["type"]]
-}>[]
+			: ArgumentTypes[_item<Inputs, K>["type"]];
+}>[];
 
 // {
 //   const test: OutputPositionalValues<
@@ -106,27 +106,27 @@ export type OutputPositionalValues<
 //   const [a, b, c] = test
 // }
 
-export type TypeName = keyof ArgumentTypes
+export type TypeName = keyof ArgumentTypes;
 
 export interface TypedArgument<
 	Name extends string,
 	Type extends TypeName,
 	Message extends command.AnyMessage,
 > {
-	readonly name: Name
-	readonly type: Type
+	readonly name: Name;
+	readonly type: Type;
 	readonly validate?: (
 		this: void,
 		value: ArgumentTypes[Type],
 		message: Message,
-	) => boolean | string | Promise<boolean | string>
+	) => boolean | string | Promise<boolean | string>;
 
-	typeErrorMessage?: string | discord.EmbedBuilder
-	validationErrorMessage?: string | discord.EmbedBuilder
+	typeErrorMessage?: string | discord.EmbedBuilder;
+	validationErrorMessage?: string | discord.EmbedBuilder;
 }
 
 export interface NamedArgument<Name extends string> {
-	readonly name: Name
+	readonly name: Name;
 }
 
 export interface OptionalArgument<
@@ -134,30 +134,30 @@ export interface OptionalArgument<
 	Type extends TypeName,
 	Message extends command.AnyMessage,
 > {
-	readonly required?: Required
+	readonly required?: Required;
 	readonly default?: Required extends true
 		? never
-		: util.Scrap<ArgumentTypes[Type], [message: Message]>
-	missingErrorMessage?: string | discord.EmbedBuilder
+		: util.Scrap<ArgumentTypes[Type], [message: Message]>;
+	missingErrorMessage?: string | discord.EmbedBuilder;
 }
 
 export type ArgumentTypes = {
-	string: string
-	number: number
-	date: Date
-	json: object
-	boolean: boolean
-	regex: RegExp
-	array: Array<string>
-	user: discord.User
-	member: discord.GuildMember
-	channel: discord.Channel
-	message: discord.Message
-	role: discord.Role
-	emote: discord.GuildEmoji | string
-	invite: discord.Invite
-	command: command.ICommand
-} & TypeResolversToRecord<typeof types>
+	string: string;
+	number: number;
+	date: Date;
+	json: object;
+	boolean: boolean;
+	regex: RegExp;
+	array: Array<string>;
+	user: discord.User;
+	member: discord.GuildMember;
+	channel: discord.Channel;
+	message: discord.Message;
+	role: discord.Role;
+	emote: discord.GuildEmoji | string;
+	invite: discord.Invite;
+	command: command.ICommand;
+} & TypeResolversToRecord<typeof types>;
 
 export type TypeResolversToRecord<
 	TypeResolvers extends readonly TypeResolver<any, any>[],
@@ -167,8 +167,8 @@ export type TypeResolversToRecord<
 		{ name: K }
 	> extends TypeResolver<any, infer T>
 		? T
-		: never
-}
+		: never;
+};
 
 export class TypeResolver<Name extends string, Type> {
 	constructor(
@@ -177,20 +177,20 @@ export class TypeResolver<Name extends string, Type> {
 			readonly resolver: (
 				value: string | number,
 				message: command.UnknownMessage,
-			) => Promise<Type>
+			) => Promise<Type>;
 		},
 	) {}
 
 	static fromZod<Name extends string, Type>(
 		name: Name,
 		options: {
-			zod: typeParser.ZodType<Type, any, any>
+			zod: typeParser.ZodType<Type, any, any>;
 		},
 	) {
 		return new TypeResolver(name, {
 			resolver: async (value) => {
 				try {
-					return await options.zod.parseAsync(value)
+					return await options.zod.parseAsync(value);
 				} catch (error: any) {
 					throw new TypeResolverError(
 						error instanceof typeParser.ZodError
@@ -200,17 +200,17 @@ export class TypeResolver<Name extends string, Type> {
 							expected: options.zod._def.type,
 							provided: value,
 						},
-					)
+					);
 				}
 			},
-		})
+		});
 	}
 
 	static fromRegex<Name extends string, Type>(
 		name: Name,
 		options: {
-			regex: RegExp
-			transformer: (full: string, ...groups: string[]) => Type
+			regex: RegExp;
+			transformer: (full: string, ...groups: string[]) => Type;
 		},
 	) {
 		return new TypeResolver(name, {
@@ -219,19 +219,19 @@ export class TypeResolver<Name extends string, Type> {
 					throw new TypeResolverError("Invalid input type", {
 						expected: ["string"],
 						provided: typeof value,
-					})
+					});
 
-				const match = options.regex.exec(value)
+				const match = options.regex.exec(value);
 
 				if (!match)
 					throw new TypeResolverError("Invalid string pattern", {
 						expected: [options.regex.source],
 						provided: value,
-					})
+					});
 
-				return options.transformer(match[0], ...match.slice(1))
+				return options.transformer(match[0], ...match.slice(1));
 			},
-		})
+		});
 	}
 }
 
@@ -239,12 +239,12 @@ export class TypeResolverError extends Error {
 	constructor(
 		message: string,
 		private options: {
-			expected: (string | number | boolean)[]
-			provided: string | number
+			expected: (string | number | boolean)[];
+			provided: string | number;
 		},
 	) {
-		super(message)
-		this.name = "TypeResolverError"
+		super(message);
+		this.name = "TypeResolverError";
 	}
 
 	override toString() {
@@ -257,15 +257,15 @@ export class TypeResolverError extends Error {
 				(expect, index, all) =>
 					`  ${index < all.length - 1 ? "├" : "└"} ${typeof expect === "number" || typeof expect === "boolean" ? expect : `"${expect}"`}`,
 			)
-			.join("\n")}`
+			.join("\n")}`;
 	}
 }
 
 export interface IRest
 	extends NamedArgument<string>,
 		OptionalArgument<boolean, "string", any> {
-	description: string
-	all?: boolean
+	description: string;
+	all?: boolean;
 }
 
 export interface Rest<
@@ -274,21 +274,21 @@ export interface Rest<
 	Message extends command.AnyMessage,
 > extends NamedArgument<Name>,
 		OptionalArgument<Required, "string", Message> {
-	description: string
-	all?: boolean
+	description: string;
+	all?: boolean;
 }
 
 export function rest<const Name extends string, const Required extends boolean>(
 	options: Rest<Name, Required, command.AnyMessage>,
 ): Rest<Name, Required, command.AnyMessage> {
-	return options
+	return options;
 }
 
 export interface IOption
 	extends TypedArgument<string, TypeName, any>,
 		OptionalArgument<boolean, TypeName, any> {
-	description: string
-	aliases?: readonly string[]
+	description: string;
+	aliases?: readonly string[];
 }
 
 export interface Option<
@@ -298,8 +298,8 @@ export interface Option<
 	Message extends command.AnyMessage,
 > extends TypedArgument<Name, Type, Message>,
 		OptionalArgument<Required, Type, Message> {
-	description: string
-	aliases?: readonly string[]
+	description: string;
+	aliases?: readonly string[];
 }
 
 export function option<
@@ -309,13 +309,13 @@ export function option<
 >(
 	options: Readonly<Option<Name, Type, Required, command.AnyMessage>>,
 ): Option<Name, Type, Required, command.AnyMessage> {
-	return options
+	return options;
 }
 
 export interface IPositional
 	extends TypedArgument<string, TypeName, any>,
 		OptionalArgument<boolean, TypeName, any> {
-	description: string
+	description: string;
 }
 
 export interface Positional<
@@ -325,7 +325,7 @@ export interface Positional<
 	Message extends command.AnyMessage,
 > extends TypedArgument<Name, Type, Message>,
 		OptionalArgument<Required, Type, Message> {
-	description: string
+	description: string;
 }
 
 export function positional<
@@ -335,61 +335,61 @@ export function positional<
 >(
 	options: Positional<Name, Type, Required, command.AnyMessage>,
 ): Positional<Name, Type, Required, command.AnyMessage> {
-	return options
+	return options;
 }
 
 export interface IFlag extends NamedArgument<string> {
-	aliases?: readonly string[]
-	description: string
-	flag: string
+	aliases?: readonly string[];
+	description: string;
+	flag: string;
 }
 
 export interface Flag<Name extends string> extends NamedArgument<Name> {
-	aliases?: readonly string[]
-	description: string
-	flag: string
+	aliases?: readonly string[];
+	description: string;
+	flag: string;
 }
 
 export function flag<const Name extends string>(
 	options: Flag<Name>,
 ): Flag<Name> {
-	return options
+	return options;
 }
 
 export function resolveGivenArgument(
 	parsedArgs: yargsParser.Arguments,
 	arg: IOption | IFlag,
 ): {
-	given: boolean
-	nameIsGiven: boolean
-	usedName: string
-	value: any
+	given: boolean;
+	nameIsGiven: boolean;
+	usedName: string;
+	value: any;
 } {
-	let usedName = arg.name
-	let nameIsGiven = arg.name in parsedArgs
+	let usedName = arg.name;
+	let nameIsGiven = arg.name in parsedArgs;
 	let given =
-		parsedArgs[arg.name] !== undefined && parsedArgs[arg.name] !== null
-	let value = parsedArgs[arg.name]
+		parsedArgs[arg.name] !== undefined && parsedArgs[arg.name] !== null;
+	let value = parsedArgs[arg.name];
 
 	if (!given && arg.aliases) {
 		for (const alias of arg.aliases) {
 			if (alias in parsedArgs) {
-				usedName = alias
-				nameIsGiven = true
-				given = true
-				value = parsedArgs[alias]
-				break
+				usedName = alias;
+				nameIsGiven = true;
+				given = true;
+				value = parsedArgs[alias];
+				break;
 			}
 		}
 	}
 
 	if (!given && isFlag(arg)) {
-		given = arg.flag in parsedArgs
-		value = parsedArgs[arg.flag]
-		usedName = arg.flag
+		given = arg.flag in parsedArgs;
+		value = parsedArgs[arg.flag];
+		usedName = arg.flag;
 	}
 
-	return { given, usedName, value, nameIsGiven }
+	return { given, usedName, value, nameIsGiven };
 }
 
 export async function validate(
@@ -398,9 +398,9 @@ export async function validate(
 	castedValue: any,
 	message: command.UnknownMessage,
 ): Promise<util.SystemMessage | true> {
-	if (!subject.validate) return true
+	if (!subject.validate) return true;
 
-	const checkResult = await subject.validate(castedValue, message)
+	const checkResult = await subject.validate(castedValue, message);
 
 	const errorEmbed = async (
 		errorMessage: string,
@@ -410,19 +410,19 @@ export async function validate(
 				return util.getSystemMessage("error", {
 					header: `Bad ${subjectType} tested "${subject.name}".`,
 					body: subject.validationErrorMessage,
-				})
+				});
 			}
 
-			return { embeds: [subject.validationErrorMessage] }
+			return { embeds: [subject.validationErrorMessage] };
 		}
 
 		return util.getSystemMessage("error", {
 			header: `Bad ${subjectType} tested "${subject.name}".`,
 			body: errorMessage,
-		})
-	}
+		});
+	};
 
-	if (typeof checkResult === "string") return errorEmbed(checkResult)
+	if (typeof checkResult === "string") return errorEmbed(checkResult);
 
 	if (!checkResult)
 		return errorEmbed(
@@ -433,9 +433,9 @@ export async function validate(
 						lang: "js",
 					})
 				: "Please use the `--help` flag for more information.",
-		)
+		);
 
-	return true
+	return true;
 }
 
 export async function resolveType(
@@ -446,30 +446,30 @@ export async function resolveType(
 	setValue: <K extends keyof ArgumentTypes>(value: ArgumentTypes[K]) => unknown,
 	cmd: command.ICommand,
 ): Promise<util.SystemMessage | true> {
-	const types = await import("#types").then((m) => m.types)
+	const types = await import("#types").then((m) => m.types);
 
-	const empty = new Error("The value is empty!")
+	const empty = new Error("The value is empty!");
 
 	const cast = async () => {
-		if (!subject.type) return
+		if (!subject.type) return;
 
 		if (baseValue === undefined) {
-			if (subject.required) throw empty
+			if (subject.required) throw empty;
 
-			setValue(undefined)
-			return
+			setValue(undefined);
+			return;
 		}
 
 		const output = await types
 			.find((resolver) => resolver.name === subject.type)
-			?.options.resolver(baseValue, message)
+			?.options.resolver(baseValue, message);
 
-		setValue(output)
-	}
+		setValue(output);
+	};
 
 	try {
-		await cast()
-		return true
+		await cast();
+		return true;
 	} catch (error) {
 		const errorCode = await discordEval.code.stringify({
 			content:
@@ -477,47 +477,47 @@ export async function resolveType(
 					? `${error.name}: ${error instanceof TypeResolverError ? `${error.toString()}` : error.message}`
 					: `Unknown Error:\n${inspect(error)}`,
 			lang: "js",
-		})
+		});
 
 		if (subject.typeErrorMessage) {
 			if (typeof subject.typeErrorMessage === "string") {
 				return util.getSystemMessage("error", {
 					header: `Bad ${subjectType} type "${subject.name}".`,
 					body: subject.typeErrorMessage.replace(/@error/g, errorCode),
-				})
+				});
 			}
 
-			return { embeds: [subject.typeErrorMessage] }
+			return { embeds: [subject.typeErrorMessage] };
 		}
 
 		if (typeof subject.type === "function")
 			logger.error(
 				`The "${subject.name}" argument of the "${cmd.options.name}" command must have a custom typeErrorMessage because it is a custom type.`,
-			)
+			);
 
 		return util.getSystemMessage("error", {
 			header: `Bad ${subjectType} type "${subject.name}".`,
 			body: `Cannot convert the given "${subject.name}" ${subjectType}${
 				typeof subject.type === "function" ? "" : ` into \`${subject.type}\``
 			}\n${errorCode}`,
-		})
+		});
 	}
 }
 
 export function getCastingDescriptionOf(
 	arg: TypedArgument<any, any, any>,
 ): string {
-	if (arg.type === "array") return "Array<string>"
-	return arg.type
+	if (arg.type === "array") return "Array<string>";
+	return arg.type;
 }
 
 export function isFlag(arg: any): arg is Flag<any> {
-	return "flag" in arg
+	return "flag" in arg;
 }
 
 export function trimArgumentValue(value: string | number): string | number {
-	if (typeof value === "number") return value
-	const match = /^(?:"(.+)"|'(.+)'|(.+))$/s.exec(String(value))
-	if (match) return match[1] ?? match[2] ?? match[3]
-	return value
+	if (typeof value === "number") return value;
+	const match = /^(?:"(.+)"|'(.+)'|(.+))$/s.exec(String(value));
+	if (match) return match[1] ?? match[2] ?? match[3];
+	return value;
 }

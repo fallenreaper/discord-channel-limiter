@@ -1,13 +1,13 @@
 // native file, if you want edit it, remove the "native" suffix from the filename
 
-import fs from "node:fs"
-import * as discordEval from "discord-eval.ts"
-import discord from "discord.js"
-import time from "tims"
-import config from "#config"
-import { Command } from "#core/command"
-import env from "#core/env"
-import * as util from "#core/util"
+import fs from "node:fs";
+import * as discordEval from "discord-eval.ts";
+import discord from "discord.js";
+import time from "tims";
+import config from "#config";
+import { Command } from "#core/command";
+import env from "#core/env";
+import * as util from "#core/util";
 
 export default new Command({
 	name: "info",
@@ -21,21 +21,21 @@ export default new Command({
 		},
 	],
 	async run(message) {
-		const databaseClient = util.getDatabaseDriverName()
+		const databaseClient = util.getDatabaseDriverName();
 
-		const gitURL = config.openSource ? await util.getGitURL() : undefined
+		const gitURL = config.openSource ? await util.getGitURL() : undefined;
 
-		let fundingURL: string | null = null
+		let fundingURL: string | null = null;
 
 		try {
 			const fundingFile = await fs.promises.readFile(
 				util.rootPath(".github", "funding.yml"),
 				"utf-8",
-			)
+			);
 
-			const match = /buy_me_a_coffee: (.+)\n?/.exec(fundingFile)
+			const match = /buy_me_a_coffee: (.+)\n?/.exec(fundingFile);
 
-			if (match) fundingURL = `https://buymeacoffee.com/${match[1]}`
+			if (match) fundingURL = `https://buymeacoffee.com/${match[1]}`;
 		} catch {}
 
 		const embed = new discord.EmbedBuilder()
@@ -85,18 +85,18 @@ export default new Command({
 							`guilds: ${message.client.guilds.cache.size}`,
 							`users: ${message.client.users.cache.size}`,
 							`members: ${message.client.guilds.cache.reduce((acc, guild) => {
-								return acc + guild.members.cache.size
+								return acc + guild.members.cache.size;
 							}, 0)}`,
 							`channels: ${message.client.channels.cache.size}`,
 							`roles: ${message.client.guilds.cache.reduce((acc, guild) => {
-								return acc + guild.roles.cache.size
+								return acc + guild.roles.cache.size;
 							}, 0)}`,
 							`messages: ${message.client.channels.cache.reduce(
 								(acc, channel) => {
 									return (
 										acc +
 										(channel.isTextBased() ? channel.messages.cache.size : 0)
-									)
+									);
 								},
 								0,
 							)}`,
@@ -104,7 +104,7 @@ export default new Command({
 					}),
 					inline: true,
 				},
-			)
+			);
 
 		if (message.args.dependencies)
 			embed.addFields(
@@ -122,7 +122,7 @@ export default new Command({
 									lang: "yml",
 									content: Object.entries(util.packageJSON.dependencies)
 										.map(([name, version]) => {
-											return `${name.replace(/@/g, "")}: ${version}`
+											return `${name.replace(/@/g, "")}: ${version}`;
 										})
 										.join("\n"),
 								})
@@ -138,17 +138,17 @@ export default new Command({
 									lang: "yml",
 									content: Object.entries(util.packageJSON.devDependencies)
 										.map(([name, version]) => {
-											return `${name.replace(/@/g, "")}: ${version}`
+											return `${name.replace(/@/g, "")}: ${version}`;
 										})
 										.join("\n"),
 								})
 							: "No dev dependencies",
 					inline: true,
 				},
-			)
+			);
 
 		const row =
-			new discord.ActionRowBuilder<discord.MessageActionRowComponentBuilder>()
+			new discord.ActionRowBuilder<discord.MessageActionRowComponentBuilder>();
 
 		if (gitURL) {
 			row.addComponents(
@@ -156,7 +156,7 @@ export default new Command({
 					.setLabel("View source")
 					.setStyle(discord.ButtonStyle.Link)
 					.setURL(gitURL),
-			)
+			);
 		}
 
 		if (fundingURL) {
@@ -166,12 +166,12 @@ export default new Command({
 					.setEmoji("💖")
 					.setStyle(discord.ButtonStyle.Link)
 					.setURL(fundingURL),
-			)
+			);
 		}
 
 		return message.channel.send({
 			embeds: [embed],
 			components: gitURL || fundingURL ? [row] : undefined,
-		})
+		});
 	},
-})
+});

@@ -1,24 +1,24 @@
 // system file, please don't modify it
 
-import url from "node:url"
-import discord from "discord.js"
+import url from "node:url";
+import discord from "discord.js";
 
-import * as handler from "@ghom/handler"
+import * as handler from "@ghom/handler";
 
-import config from "#config"
-import * as command from "#core/command"
-import env from "#core/env"
-import logger from "#core/logger"
-import * as util from "#core/util"
+import config from "#config";
+import * as command from "#core/command";
+import env from "#core/env";
+import logger from "#core/logger";
+import * as util from "#core/util";
 
-import { styleText } from "node:util"
+import { styleText } from "node:util";
 
-const __filename = util.getCurrentFilename(import.meta)
+const __filename = util.getCurrentFilename(import.meta);
 
 export class SlashCommandError extends Error {
 	constructor(message: string) {
-		super(message)
-		this.name = "SlashCommandError"
+		super(message);
+		this.name = "SlashCommandError";
 	}
 }
 
@@ -27,73 +27,73 @@ export const slashCommandHandler = new handler.Handler<ISlashCommand>(
 	{
 		pattern: /\.[tj]s$/,
 		loader: async (filepath) => {
-			const file = await import(url.pathToFileURL(filepath).href)
-			if (file.default instanceof SlashCommand) return file.default
+			const file = await import(url.pathToFileURL(filepath).href);
+			if (file.default instanceof SlashCommand) return file.default;
 			throw new Error(
 				`${filepath}: default export must be a SlashCommand instance`,
-			)
+			);
 		},
 		onLoad: async (filepath, command) => {
-			command.native = /.native.[jt]s$/.test(filepath)
-			command.filepath = filepath
-			return slashCommands.add(command)
+			command.native = /.native.[jt]s$/.test(filepath);
+			command.filepath = filepath;
+			return slashCommands.add(command);
 		},
 	},
-)
+);
 
 export const slashCommands = new (class extends discord.Collection<
 	string,
 	ISlashCommand
 > {
 	add(command: ISlashCommand) {
-		validateSlashCommand(command)
-		this.set(command.options.name, command)
+		validateSlashCommand(command);
+		this.set(command.options.name, command);
 	}
-})()
+})();
 
-export type SlashCommandChannelType = "guild" | "dm" | "thread"
+export type SlashCommandChannelType = "guild" | "dm" | "thread";
 
 export interface ISlashCommandOptions {
-	name: string
-	description: string
-	channelType?: SlashCommandChannelType
-	guildOnly?: boolean
-	guildOwnerOnly?: boolean
-	botOwnerOnly?: boolean
-	userPermissions?: util.PermissionsNames[]
-	allowRoles?: discord.RoleResolvable[]
-	denyRoles?: discord.RoleResolvable[]
-	middlewares?: command.IMiddleware[]
+	name: string;
+	description: string;
+	channelType?: SlashCommandChannelType;
+	guildOnly?: boolean;
+	guildOwnerOnly?: boolean;
+	botOwnerOnly?: boolean;
+	userPermissions?: util.PermissionsNames[];
+	allowRoles?: discord.RoleResolvable[];
+	denyRoles?: discord.RoleResolvable[];
+	middlewares?: command.IMiddleware[];
 	run: (
 		interaction: discord.ChatInputCommandInteraction,
-	) => unknown | Promise<unknown>
-	build?: (builder: discord.SlashCommandBuilder) => unknown | Promise<unknown>
+	) => unknown | Promise<unknown>;
+	build?: (builder: discord.SlashCommandBuilder) => unknown | Promise<unknown>;
 }
 
 export interface SlashCommandOptions<
 	ChannelType extends SlashCommandChannelType,
 	GuildOnly extends boolean,
 > {
-	name: string
-	description: string
-	channelType?: ChannelType
-	guildOnly?: GuildOnly
-	guildOwnerOnly?: boolean
-	botOwnerOnly?: boolean
-	userPermissions?: discord.PermissionsString[]
-	allowRoles?: discord.RoleResolvable[]
-	denyRoles?: discord.RoleResolvable[]
+	name: string;
+	description: string;
+	channelType?: ChannelType;
+	guildOnly?: GuildOnly;
+	guildOwnerOnly?: boolean;
+	botOwnerOnly?: boolean;
+	userPermissions?: discord.PermissionsString[];
+	allowRoles?: discord.RoleResolvable[];
+	denyRoles?: discord.RoleResolvable[];
 	middlewares?: command.Middleware<
 		SlashCommandInteraction<ChannelType, GuildOnly>
-	>[]
+	>[];
 	build?: (
 		this: discord.SlashCommandBuilder,
 		builder: discord.SlashCommandBuilder,
-	) => unknown
+	) => unknown;
 	run: (
 		this: SlashCommandInteraction<ChannelType, GuildOnly>,
 		interaction: SlashCommandInteraction<ChannelType, GuildOnly>,
-	) => unknown
+	) => unknown;
 }
 
 export interface SlashCommandInteraction<
@@ -104,56 +104,56 @@ export interface SlashCommandInteraction<
 		? command.GuildMessage["channel"]
 		: ChannelType extends "dm"
 			? command.DirectMessage["channel"]
-			: discord.AnyThreadChannel
-	guild: GuildOnly extends true ? command.GuildMessage["guild"] : null
+			: discord.AnyThreadChannel;
+	guild: GuildOnly extends true ? command.GuildMessage["guild"] : null;
 }
 
 export class SlashCommand<
 	ChannelType extends SlashCommandChannelType,
 	GuildOnly extends boolean,
 > {
-	filepath?: string
-	native = false
-	builder = new discord.SlashCommandBuilder()
+	filepath?: string;
+	native = false;
+	builder = new discord.SlashCommandBuilder();
 
 	constructor(public options: SlashCommandOptions<ChannelType, GuildOnly>) {}
 }
 
 export interface ISlashCommand {
-	filepath?: string
-	native: boolean
-	builder: discord.SlashCommandBuilder
-	options: ISlashCommandOptions
+	filepath?: string;
+	native: boolean;
+	builder: discord.SlashCommandBuilder;
+	options: ISlashCommandOptions;
 }
 
 export function validateSlashCommand(command: ISlashCommand) {
 	command.builder
 		.setName(command.options.name)
-		.setDescription(command.options.description)
+		.setDescription(command.options.description);
 
 	if (command.options.userPermissions)
 		command.builder.setDefaultMemberPermissions(
 			command.options.userPermissions.reduce((bit, name) => {
-				return bit | discord.PermissionFlagsBits[name]
+				return bit | discord.PermissionFlagsBits[name];
 			}, 0n),
-		)
+		);
 
-	command.options.build?.bind(command.builder)(command.builder)
+	command.options.build?.bind(command.builder)(command.builder);
 
-	debugSlashCommandBuilder(command.builder)
+	debugSlashCommandBuilder(command.builder);
 
 	Object.defineProperty(command.options.run, "name", {
 		value: util.generateDebugName({
 			name: command.options.name,
 			type: "slash",
 		}),
-	})
+	});
 
 	logger.log(
 		`loaded command ${styleText("blueBright", `/${command.options.name}`)}${
 			command.native ? styleText("green", " native") : ""
 		} ${styleText("grey", command.options.description)}`,
-	)
+	);
 }
 
 export async function registerSlashCommands(
@@ -161,22 +161,22 @@ export async function registerSlashCommands(
 	guildId?: string,
 ) {
 	try {
-		const data = slashCommands.map((command) => command.builder.toJSON())
+		const data = slashCommands.map((command) => command.builder.toJSON());
 
 		if (guildId) {
-			const guild = await client.guilds.fetch(guildId)
-			await guild.commands.set(data)
+			const guild = await client.guilds.fetch(guildId);
+			await guild.commands.set(data);
 		} else {
-			await client.application.commands.set(data)
+			await client.application.commands.set(data);
 		}
 
 		logger.log(
 			`deployed ${styleText("blue", String(data.length))} slash commands${
 				guildId ? ` to new guild ${styleText("blue", guildId)}` : ""
 			}`,
-		)
+		);
 	} catch (error: any) {
-		logger.error(error, __filename, true)
+		logger.error(error, __filename, true);
 	}
 }
 
@@ -187,11 +187,11 @@ export async function prepareSlashCommand(
 	if (cmd.options.botOwnerOnly && interaction.user.id !== env.BOT_OWNER)
 		throw new SlashCommandError(
 			"This command can only be used by the bot owner",
-		)
+		);
 
 	if (cmd.options.guildOnly) {
 		if (!interaction.inGuild() || !interaction.guild)
-			throw new SlashCommandError("This command can only be used in a guild")
+			throw new SlashCommandError("This command can only be used in a guild");
 
 		if (
 			cmd.options.guildOwnerOnly &&
@@ -199,10 +199,10 @@ export async function prepareSlashCommand(
 		)
 			throw new SlashCommandError(
 				"This command can only be used by the guild owner",
-			)
+			);
 
 		if (cmd.options.allowRoles || cmd.options.denyRoles) {
-			const member = await interaction.guild.members.fetch(interaction.user.id)
+			const member = await interaction.guild.members.fetch(interaction.user.id);
 
 			if (cmd.options.allowRoles) {
 				if (
@@ -212,7 +212,7 @@ export async function prepareSlashCommand(
 				)
 					throw new SlashCommandError(
 						"You don't have the required role to use this command",
-					)
+					);
 			}
 
 			if (cmd.options.denyRoles) {
@@ -223,29 +223,29 @@ export async function prepareSlashCommand(
 				)
 					throw new SlashCommandError(
 						"You have a role that is not allowed to use this command",
-					)
+					);
 			}
 		}
 	}
 
 	if (cmd.options.channelType === "thread") {
 		if (!interaction.channel || !interaction.channel.isThread())
-			throw new SlashCommandError("This command can only be used in a thread")
+			throw new SlashCommandError("This command can only be used in a thread");
 	} else if (cmd.options.channelType === "dm") {
 		if (!interaction.channel || !interaction.channel.isDMBased())
-			throw new SlashCommandError("This command can only be used in a DM")
+			throw new SlashCommandError("This command can only be used in a DM");
 	}
 
 	if (cmd.options.middlewares) {
 		const result = await command.prepareMiddlewares(
 			interaction,
 			cmd.options.middlewares,
-		)
+		);
 
 		if (result !== true) {
 			if (result === false)
-				throw new SlashCommandError("This command is stopped by a middleware")
-			throw result
+				throw new SlashCommandError("This command is stopped by a middleware");
+			throw result;
 		}
 	}
 }
@@ -255,19 +255,19 @@ export function slashCommandToListItem(
 ): string {
 	return `</${computed.name}:${computed.id}> - ${
 		computed.description || "no description"
-	}`
+	}`;
 }
 
 export async function sendSlashCommandDetails(
 	interaction: discord.ChatInputCommandInteraction,
 	computed: discord.ApplicationCommand,
 ) {
-	const { detailSlashCommand } = config
+	const { detailSlashCommand } = config;
 
-	const command = slashCommands.get(computed.name)
+	const command = slashCommands.get(computed.name);
 
 	if (!command)
-		throw new SlashCommandError(`Command ${computed.name} not found`)
+		throw new SlashCommandError(`Command ${computed.name} not found`);
 
 	await interaction.reply(
 		detailSlashCommand
@@ -305,14 +305,14 @@ export async function sendSlashCommandDetails(
 							),
 					],
 				},
-	)
+	);
 }
 
 export function isSlashCommandOption(
 	object: discord.ToAPIApplicationCommandOptions,
 ): object is discord.ToAPIApplicationCommandOptions &
 	discord.APIApplicationCommandOption {
-	return "type" in object
+	return "type" in object;
 }
 
 export function debugSlashCommandBuilder(
@@ -320,26 +320,26 @@ export function debugSlashCommandBuilder(
 	path: string[] = [],
 ) {
 	try {
-		builder.toJSON()
+		builder.toJSON();
 	} catch (error: any) {
-		let pathSegment: string
+		let pathSegment: string;
 
 		if (builder instanceof discord.SlashCommandBuilder) {
-			pathSegment = builder.name
+			pathSegment = builder.name;
 		} else if (isSlashCommandOption(builder)) {
-			pathSegment = `${discord.ApplicationCommandOptionType[builder.type]}Option(${builder.name})`
+			pathSegment = `${discord.ApplicationCommandOptionType[builder.type]}Option(${builder.name})`;
 		} else {
-			pathSegment = "unknown"
+			pathSegment = "unknown";
 		}
 
 		if ("options" in builder) {
 			builder.options.forEach((option) =>
 				debugSlashCommandBuilder(option, path.concat(pathSegment)),
-			)
+			);
 		} else {
 			throw new SlashCommandError(
 				`/${path.concat(pathSegment).join(" ")}: ${error.message}`,
-			)
+			);
 		}
 	}
 }
