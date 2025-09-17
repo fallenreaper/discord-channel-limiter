@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
-		"moduleResolution": "nodenext",
+		"moduleResolution": "Node",
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"module": "nodenext",
+		"module": "esnext",
 		"target": "ES2020",
 		"lib": ["ES2023"],
 		"strict": true,
@@ -13,7 +13,7 @@
 		"skipLibCheck": true,
 		"esModuleInterop": true,
 		"noImplicitOverride": true,
-		"allowImportingTsExtensions": true,
+		"allowImportingTsExtensions": false,
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"paths": {

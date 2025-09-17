@@ -1,5 +1,5 @@
 import { Listener } from "#core/listener";
-import { processNewAndEditedMessages } from "../utilities/util.ts";
+import { processNewAndEditedMessages } from "../utilities/util";
 
 /**
  * See the {@link https://ghom.gitbook.io/bot.ts/usage/create-a-listener listener guide} for more information.
