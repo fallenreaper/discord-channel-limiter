@@ -47,9 +47,11 @@ export const processNewAndEditedMessages = async (message: any) => {
 
 	// Account for Embeds
 	cost += channelInfo.cost * message.embeds.length;
+	console.log(`Embed Length Determined: ${message.embeds.length}`)
 
 	// Account for Files
 	cost += channelInfo.cost * 1000 * message.attachments.size;
+	console.log(`Number of Files Identified: ${message.attachments.size}`)
 
 	// Account for URLS
 	let numberOfUrls = 0;
@@ -61,6 +63,7 @@ export const processNewAndEditedMessages = async (message: any) => {
 			message.embeds.map((e: { toJSON: () => any }) => e.toJSON()).join(" "),
 		).length;
 	}
+	console.log(`URLs Identified: ${numberOfUrls}`)
 	cost += channelInfo.cost * 1000 * numberOfUrls;
 
 	// Makes adjustments to the user's allowance
