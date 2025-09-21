@@ -28,7 +28,7 @@ export const processNewAndEditedMessages = async (message: any) => {
 		return;
 	}
 	// Sets the Cost for business.
-	let cost = (message.content.length * channelInfo.cost) || 0;
+	let cost = message.content.length * channelInfo.cost || 0;
 
 	let isNewUser = false;
 	let userInfo = await userInformation.query
@@ -46,11 +46,11 @@ export const processNewAndEditedMessages = async (message: any) => {
 	}
 
 	// Account for Embeds
-	cost = cost + (channelInfo.cost * message.embeds.length);
+	cost = cost + channelInfo.cost * message.embeds.length;
 	console.log(`Embed Length Determined: ${message.embeds.length}`);
 
 	// Account for Files
-	cost = cost + (channelInfo.cost * 1000 * message.attachments.size);
+	cost = cost + channelInfo.cost * 1000 * message.attachments.size;
 	console.log(`Number of Files Identified: ${message.attachments.size}`);
 
 	// Account for URLS
@@ -64,7 +64,7 @@ export const processNewAndEditedMessages = async (message: any) => {
 		).length;
 	}
 	console.log(`URLs Identified: ${numberOfUrls}`);
-	cost = cost + (channelInfo.cost * 1000 * numberOfUrls);
+	cost = cost + channelInfo.cost * 1000 * numberOfUrls;
 
 	// Makes adjustments to the user's allowance
 	userInfo.allowance -= cost;
