@@ -1,6 +1,7 @@
 import { INITIAL_POINTS } from "#config";
 import channelLimits from "#tables/channelLimits";
 import userInformation from "#tables/userInformation";
+import { Message, OmitPartialGroupDMChannel } from "discord.js";
 
 export function extractUrlsFromString(text: string): string[] {
 	// This regex matches strings starting with http or https, followed by ://,
@@ -13,7 +14,8 @@ export function extractUrlsFromString(text: string): string[] {
 	return matches ? matches : [];
 }
 
-export const processNewAndEditedMessages = async (message: any) => {
+export const processNewAndEditedMessages = async (message: OmitPartialGroupDMChannel<Message<boolean>>
+) => {
 	if (message.author.bot) return;
 
 	const channelInfo = await channelLimits.query
@@ -27,8 +29,6 @@ export const processNewAndEditedMessages = async (message: any) => {
 	if (!channelInfo) {
 		return;
 	}
-	// Sets the Cost for business.
-	let cost = message.content.length * channelInfo.cost || 0;
 
 	let isNewUser = false;
 	let userInfo = await userInformation.query
@@ -44,6 +44,9 @@ export const processNewAndEditedMessages = async (message: any) => {
 			allowance: INITIAL_POINTS,
 		};
 	}
+
+	// Sets the Cost for the length of the content, or 0.
+	let cost = message.content.length * channelInfo.cost || 0;
 
 	// Account for Embeds
 	cost = cost + channelInfo.cost * message.embeds.length;
