@@ -1,7 +1,7 @@
+import type { Message, OmitPartialGroupDMChannel } from "discord.js";
 import { INITIAL_POINTS } from "#config";
 import channelLimits from "#tables/channelLimits";
 import userInformation from "#tables/userInformation";
-import { Message, OmitPartialGroupDMChannel } from "discord.js";
 
 export function extractUrlsFromString(text: string): string[] {
 	// This regex matches strings starting with http or https, followed by ://,
@@ -14,7 +14,8 @@ export function extractUrlsFromString(text: string): string[] {
 	return matches ? matches : [];
 }
 
-export const processNewAndEditedMessages = async (message: OmitPartialGroupDMChannel<Message<boolean>>
+export const processNewAndEditedMessages = async (
+	message: OmitPartialGroupDMChannel<Message<boolean>>,
 ) => {
 	if (message.author.bot) return;
 
@@ -46,14 +47,14 @@ export const processNewAndEditedMessages = async (message: OmitPartialGroupDMCha
 	}
 
 	// Sets the Cost for the length of the content, or 0.
-	let cost = message.content.length * channelInfo.cost || 0;
+	let cost = (message.content.length || 0) * channelInfo.cost;
 
 	// Account for Embeds
-	cost = cost + channelInfo.cost * message.embeds.length;
+	cost = cost + channelInfo.cost * (message?.embeds?.length || 0);
 	console.log(`Embed Length Determined: ${message.embeds.length}`);
 
 	// Account for Files
-	cost = cost + channelInfo.cost * 1000 * message.attachments.size;
+	cost = cost + channelInfo.cost * 1000 * (message?.attachments?.size || 0);
 	console.log(`Number of Files Identified: ${message.attachments.size}`);
 
 	// Account for URLS
