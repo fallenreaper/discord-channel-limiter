@@ -1,4 +1,4 @@
-import { Options, Partials } from "discord.js";
+import { GatewayIntentBits, Options, Partials } from "discord.js";
 import { z } from "zod";
 import { Config } from "#core/config";
 
@@ -22,21 +22,22 @@ export const config = new Config({
 	permissions: ["Administrator"],
 	client: {
 		intents: [
-			"Guilds",
-			"GuildMessages",
-			"GuildMessageReactions",
-			"GuildMessageTyping",
-			"DirectMessages",
-			"DirectMessageReactions",
-			"DirectMessageTyping",
-			"MessageContent",
-			"GuildMembers",
-			"GuildModeration",
-			"AutoModerationConfiguration",
-			"AutoModerationExecution",
-			"GuildBans",
-			"GuildIntegrations",
-			"GuildModeration",
+			GatewayIntentBits.Guilds,
+			GatewayIntentBits.GuildMessages,
+			GatewayIntentBits.GuildMessages,
+			GatewayIntentBits.GuildMessageReactions,
+			GatewayIntentBits.GuildMessageTyping,
+			GatewayIntentBits.DirectMessages,
+			GatewayIntentBits.DirectMessageReactions,
+			GatewayIntentBits.DirectMessageTyping,
+			GatewayIntentBits.MessageContent,
+			GatewayIntentBits.GuildMembers,
+			GatewayIntentBits.GuildModeration,
+			GatewayIntentBits.AutoModerationConfiguration,
+			GatewayIntentBits.AutoModerationExecution,
+			GatewayIntentBits.GuildBans,
+			GatewayIntentBits.GuildIntegrations,
+			GatewayIntentBits.GuildModeration,
 		],
 		partials: [Partials.Channel],
 		makeCache: Options.cacheWithLimits({
