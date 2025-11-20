@@ -12,6 +12,11 @@
 throttles ability for users to post  
 This bot is private and cannot be invited in other servers.
 
+## Docker
+
+if you want to leverage container management, and have docker.
+`docker compose build` will conduct a build when the correct data is supplied to it.  You can then say `docker compose up` and it will serve everything.
+
 ## Specifications
 
 You can find the documentation of bot.ts [here](https://ghom.gitbook.io/bot-ts/).  
