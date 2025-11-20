@@ -15,7 +15,7 @@ This bot is private and cannot be invited in other servers.
 ## Docker
 
 if you want to leverage container management, and have docker.
-`docker compose build` will conduct a build when the correct data is supplied to it.  You can then say `docker compose up` and it will serve everything.
+`docker compose build` will conduct a build when the correct data is supplied to it.  You can then say `docker compose up -d` and it will serve everything.
 
 ## Specifications
 
